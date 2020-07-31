@@ -1,6 +1,6 @@
 // file: validate.js
 //
-// description: ...
+// description: exports a function to validate if a request is from Slack
 //
 
 // include modules

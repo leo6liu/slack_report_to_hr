@@ -7,7 +7,7 @@
 //
 const messageActionPort = 8080; // port to listen for message_action
 const optionsLoadPort = 8081; // port to listen for options_load
-const slackToken = 'xoxb-1214041371813-1283814382608-eSZ2EQk5yE7Lmx4nhx5wKND0';
+const slackToken = 'xoxb-1214041371813-1283814382608-dTiIFmKzeTFqdBS84eoC8sDR';
 const slackSigningSecret = 'b6946a6e5bf78e0fa524f8263fbdcdce';
 const forwardChannelID = 'G017A66DXFU'; // to be deprecated
 const hrEmailAddr = 'rktliu.001@gmail.com'; // to be implemented
@@ -71,14 +71,14 @@ app.post('/report-to-hr', (req, res) => {
     const payload = JSON.parse(req.body.payload);
     const reporterID = payload.user.id;
     const triggerID = payload.trigger_id;
-    
+    console.log('payload:\n', payload);
     // create and send chat.getPermalink GET request
     //
     console.log('creating chat.getPermalink GET request...');
     const xhr_a = new XMLHttpRequest();
     xhr_a.open('GET', 'https://slack.com/api/chat.getPermalink?' +
-	       'channel=' + payload.channel.id + '&' +
-	       'message_ts=' + payload.message_ts, false);
+	       'channel=' + encodeURIComponent(payload.channel.id) + '&' +
+	       'message_ts=' + encodeURIComponent(payload.message_ts), false);
     xhr_a.setRequestHeader('Authorization', 'Bearer ' + slackToken);
     xhr_a.send();
     console.log('chat.getPermalink request status: ', xhr_a.status);

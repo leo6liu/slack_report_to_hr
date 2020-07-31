@@ -1,1 +1,1 @@
-# slack_report_to_hr
+# Slack App: Report to HR
