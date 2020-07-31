@@ -1,0 +1,25 @@
+{
+  "name": "slack_report_to_hr",
+  "version": "1.0.0",
+  "description": "",
+  "main": "report-to-hr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leo6liu/slack_report_to_hr.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leo6liu/slack_report_to_hr/issues"
+  },
+  "homepage": "https://github.com/leo6liu/slack_report_to_hr#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "express": "^4.17.1",
+    "qs": "^6.9.4",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
