@@ -6,7 +6,7 @@
 // define constants
 //
 const PORT = 8080; // port to listen for message_action
-const SLACK_OAUTH_TOKEN = 'xoxb-1214041371813-1283814382608-DtkAkmbK1Ufckgke8FlHcOJp';
+const SLACK_OAUTH_TOKEN = 'xoxb-1214041371813-1283814382608-df3eJy4bCPB6gIiemppPLgDo';
 const SLACK_SIGNING_SECRET = 'b6946a6e5bf78e0fa524f8263fbdcdce';
 const FORWARD_CHANNEL_ID = 'G017A66DXFU'; // to be deprecated
 const HR_EMAIL_ADDRESS = 'rktliu.001@gmail.com'; // to be implemented
@@ -29,13 +29,14 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/report-to-hr', (req, res) => {
     // print time and request body to terminal
     //
-    console.log(`new /report-to-hr request (${new Date().toString()})`);
-    console.log(`body:\n${req.body}`);
+    console.log('\nnew /report-to-hr request');
+    console.log(new Date().toString());
+    console.log('body:\n' + JSON.stringify(req.body) + '\n');
     
     // if validation fails, send status 400 and exit
     // else, send status 200 and continue
     //
-    if (validate.validateRequest(req, slackSigningSecret) == false) {
+    if (validate.validateRequest(req, SLACK_SIGNING_SECRET) == false) {
 	return (res.status(400).send('Verification failed'));
     } else {
 	res.status(200).send();
@@ -44,7 +45,7 @@ app.post('/report-to-hr', (req, res) => {
     // extract payload from reqest body
     //
     const payload = JSON.parse(req.body.payload);
-    //console.log(`payload:\n${payload}`);
+    //console.log('payload:\n' + JSON.stringify(payload) + '\n');
 
     // extract reporter's user ID and trigger_id from payload
     //
@@ -62,7 +63,7 @@ app.post('/report-to-hr', (req, res) => {
     xhr_a.open('GET', 'https://slack.com/api/chat.getPermalink?' +
 	       'channel=' + encodeURIComponent(payload.channel.id) + '&' +
 	       'message_ts=' + encodeURIComponent(payload.message_ts), false);
-    xhr_a.setRequestHeader('Authorization', 'Bearer ' + slackToken);
+    xhr_a.setRequestHeader('Authorization', 'Bearer ' + SLACK_OAUTH_TOKEN);
     xhr_a.send();
     console.log('chat.getPermalink request status: ', xhr_a.status);
     console.log('chat.getPermalink response text: ', xhr_a.responseText, '\n');
@@ -85,7 +86,7 @@ app.post('/report-to-hr', (req, res) => {
     xhr_b.setRequestHeader('Authorization', 'Bearer ' + SLACK_OAUTH_TOKEN);
     xhr_b.setRequestHeader('Content-Type', 'application/json');
     xhr_b.send(JSON.stringify({
-	'channel': forwardChannelID,
+	'channel': FORWARD_CHANNEL_ID,
 	'text': reportText
     }));
     console.log('chat.postMessage response status: ', xhr_b.status);
@@ -98,6 +99,11 @@ app.post('/report-to-hr', (req, res) => {
     //
     console.log('Waiting for next request...\n');
 });
+
+
+// print status message
+//
+console.log('Waiting for requests...');
 
 // listen indefinitely on specified port
 //
