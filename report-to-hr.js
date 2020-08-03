@@ -5,17 +5,23 @@
 
 // define constants
 //
-const PORT = 8080; // port to listen for message_action
-const SLACK_OAUTH_TOKEN = 'xoxb-1214041371813-1283814382608-df3eJy4bCPB6gIiemppPLgDo';
-const SLACK_SIGNING_SECRET = 'b6946a6e5bf78e0fa524f8263fbdcdce';
 const FORWARD_CHANNEL_ID = 'G017A66DXFU'; // to be deprecated
 const HR_EMAIL_ADDRESS = 'rktliu.001@gmail.com'; // to be implemented
+const PORT = 8080; // port to listen for message_action
+const SLACK_API_URL = 'https://slack.com/api';
+const SLACK_OAUTH_TOKEN =
+      'xoxb-1214041371813-1283814382608-OKvHZosLViLJyCzSjMqe7zUW';
+const SLACK_SIGNING_SECRET = 'b6946a6e5bf78e0fa524f8263fbdcdce';
+
+
 
 // include modules
 //
 const express = require('express');
 const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
-const validate = require('./validate.js'); // validate request is from Slack
+const validate = require('./functions/validate.js'); // validate request is from Slack
+const msgAction = require('./functions/interaction_payload_handlers/message-action.js');
+const viewSub = require('./functions/interaction_payload_handlers/view-submission.js');
 
 // create express app to listen for events
 //
@@ -47,53 +53,18 @@ app.post('/report-to-hr', (req, res) => {
     const payload = JSON.parse(req.body.payload);
     //console.log('payload:\n' + JSON.stringify(payload) + '\n');
 
-    // extract reporter's user ID and trigger_id from payload
+    // choose request handler based on payload type
     //
-    const reporterID = payload.user.id;
-    const triggerID = payload.trigger_id;
-
-    // get report reason from user
-    //
-    let reportReason = '';
-    
-    // create and send chat.getPermalink GET request
-    //
-    console.log('creating chat.getPermalink GET request...');
-    const xhr_a = new XMLHttpRequest();
-    xhr_a.open('GET', 'https://slack.com/api/chat.getPermalink?' +
-	       'channel=' + encodeURIComponent(payload.channel.id) + '&' +
-	       'message_ts=' + encodeURIComponent(payload.message_ts), false);
-    xhr_a.setRequestHeader('Authorization', 'Bearer ' + SLACK_OAUTH_TOKEN);
-    xhr_a.send();
-    console.log('chat.getPermalink request status: ', xhr_a.status);
-    console.log('chat.getPermalink response text: ', xhr_a.responseText, '\n');
-    
-    // extract permalink from responseText
-    //
-    const permalink = JSON.parse(xhr_a.responseText).permalink;
-
-    // format message text
-    //
-    const reportText = 'User <@' + reporterID + '>, ' +
-	  'has reported the following message: ' + permalink + '\n\n' +
-	  'Reason for report: \n' + reportReason;
-    
-    // create and send chat.postMessage POST request
-    //
-    console.log('creating chat.postMessage POST request...');
-    const xhr_b = new XMLHttpRequest();
-    xhr_b.open('POST', 'https://slack.com/api/chat.postMessage', false);
-    xhr_b.setRequestHeader('Authorization', 'Bearer ' + SLACK_OAUTH_TOKEN);
-    xhr_b.setRequestHeader('Content-Type', 'application/json');
-    xhr_b.send(JSON.stringify({
-	'channel': FORWARD_CHANNEL_ID,
-	'text': reportText
-    }));
-    console.log('chat.postMessage response status: ', xhr_b.status);
-    console.log('chat.postMessage response text: ', xhr_b.responseText, '\n');
-    
-    // create and send email to HR_EMAIL_ADDRESS
-    //
+    if (payload.type == 'message_action') {
+	console.log('detected payload type: message_action\n');
+	msgAction.messageAction(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN);
+    } else if (payload.type == 'view_submission') {
+	console.log('detected payload type: view_submission');
+	viewSub.viewSubmission(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN);
+    } else {
+	console.log('unrecognized payload type...');
+	console.log('No action taken.');
+    }
     
     // print status message
     //

@@ -1,4 +1,4 @@
-// file: validate.js
+// file: slack_report_to_hr/functions/validate.js
 //
 // description: exports a function to validate if a request is from Slack
 //
