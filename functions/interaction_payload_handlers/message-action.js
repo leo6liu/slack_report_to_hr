@@ -17,12 +17,11 @@ const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 // return: Number status (default to 0)
 //
 function messageAction(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN) {
-    // extract reporter's user ID and trigger_id from payload
+    // extract reporter's user ID, trigger_id, and message text from payload
     //
     const reporterID = payload.user.id;
     const triggerID = payload.trigger_id;
-
-    
+    const messageText = payload.message.text;
 
     // create and send chat.getPermalink GET request
     //
@@ -69,6 +68,7 @@ function messageAction(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN) {
 	    "blocks": [
 		{
 		    "type": "section",
+		    "block_id": "reporter-id",
 		    "text": {
 			"type": "mrkdwn",
 			"text": "*Reporter:* <@" + reporterID + ">"
@@ -76,20 +76,33 @@ function messageAction(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN) {
 		},
 		{
 		    "type": "section",
+		    "block_id": "permalink",
 		    "text": {
 			"type": "mrkdwn",
-			"text": "*Reported Post:* <" + permalink + "|*permalink to post*>"
+			"text": "*Reported post:* <" + permalink + "|*permalink*>"
 		    }
 		},
 		{
+		    "type": "context",
+		    "elements": [
+			{
+			    "type": "plain_text",
+			    "text": messageText,
+			    "emoji": true
+			}
+		    ]
+		},
+		{
 		    "type": "input",
+		    "block_id": "report-reason",
 		    "element": {
 			"type": "plain_text_input",
-			"multiline": true
+			"multiline": true,
+			"action_id": "reason-value"
 		    },
 		    "label": {
 			"type": "plain_text",
-			"text": "Reason for Report",
+			"text": "Reason for report:",
 			"emoji": true
 		    }
 		}

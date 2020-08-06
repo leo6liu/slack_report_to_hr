@@ -3,18 +3,6 @@
 // npm dependencies: express, xmlhttprequest
 //
 
-// define constants
-//
-const FORWARD_CHANNEL_ID = 'G017A66DXFU'; // to be deprecated
-const HR_EMAIL_ADDRESS = 'rktliu.001@gmail.com'; // to be implemented
-const PORT = 8080; // port to listen for message_action
-const SLACK_API_URL = 'https://slack.com/api';
-const SLACK_OAUTH_TOKEN =
-      'xoxb-1214041371813-1283814382608-OKvHZosLViLJyCzSjMqe7zUW';
-const SLACK_SIGNING_SECRET = 'b6946a6e5bf78e0fa524f8263fbdcdce';
-
-
-
 // include modules
 //
 const express = require('express');
@@ -22,6 +10,15 @@ const XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 const validate = require('./functions/validate.js'); // validate request is from Slack
 const msgAction = require('./functions/interaction_payload_handlers/message-action.js');
 const viewSub = require('./functions/interaction_payload_handlers/view-submission.js');
+
+// define constants
+//
+const FORWARD_CHANNEL_ID = 'G017A66DXFU'; // to be deprecated
+const HR_EMAIL_ADDRESS = 'rktliu.001@gmail.com'; // to be implemented
+const PORT = 8080; // port to listen for message_action
+const SLACK_API_URL = 'https://slack.com/api';
+const SLACK_OAUTH_TOKEN = 'xoxb-1214041371813-1283814382608-yGVs0edwBQ1SBvN4aOz8TG0o';
+const SLACK_SIGNING_SECRET = 'b6946a6e5bf78e0fa524f8263fbdcdce';
 
 // create express app to listen for events
 //
@@ -59,11 +56,12 @@ app.post('/report-to-hr', (req, res) => {
 	console.log('detected payload type: message_action\n');
 	msgAction.messageAction(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN);
     } else if (payload.type == 'view_submission') {
-	console.log('detected payload type: view_submission');
-	viewSub.viewSubmission(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN);
+	console.log('detected payload type: view_submission\n');
+	viewSub.viewSubmission(payload, SLACK_API_URL, SLACK_OAUTH_TOKEN,
+			       HR_EMAIL_ADDRESS);
     } else {
-	console.log('unrecognized payload type...');
-	console.log('No action taken.');
+	console.log('Unrecognized payload type...');
+	console.log('No action taken.\n');
     }
     
     // print status message
