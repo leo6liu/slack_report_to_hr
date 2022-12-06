@@ -19,7 +19,7 @@
   "dependencies": {
     "crypto": "^1.0.1",
     "express": "^4.17.1",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "xmlhttprequest": "^1.8.0"
   }
 }
