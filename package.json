@@ -18,7 +18,7 @@
   "homepage": "https://github.com/leo6liu/slack_report_to_hr#readme",
   "dependencies": {
     "crypto": "^1.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "qs": "^6.9.4",
     "xmlhttprequest": "^1.8.0"
   }
